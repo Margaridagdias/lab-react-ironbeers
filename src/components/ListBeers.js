@@ -1,41 +1,44 @@
-import React from 'react'
-import BeersService from '../api.js';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import Home from './Home.js';
+import BeerService from '../utils/api';
 
 class ListBeers extends React.Component {
+  state = {
+    beers: [],
+  };
 
-    componentDidMount() {
-        const beersService = new BeersService();
-        beersService.getAll('https://ih-beers-api2.herokuapp.com/beers')
-            .then((response) => {
-                console.log(response);
-                this.setState({
-                    beers: response.data //we are always looking for the data response
-                })
-            })
-    }
+  componentDidMount() {
+    const beerService = new BeerService();
+    beerService.getAll().then((response) => {
+      console.log(response);
+      this.setState({
+        beers: response.data,
+      });
+    });
+  }
 
- render() {
-        return(
-            <div>
-            <div>
-            <header>
+  render() {
+    return (
+      <div> 
+      <header>
             <Link to={`/`}>Home</Link>
             </header>
+        {this.state.beers.map((beers, index) => {
+          return (
+            <div key={index}>
+              <Link to={`/beers/${beers.id}`}>
+                <ul>
+                  <li>{beers.image}</li>
+                  <li>{beers.name}</li>
+                  <li>{beers.tagline}</li>
+                  <li>Created by:{beers.contributed_by}</li>
+                </ul>
+              </Link>
             </div>
-                {this.state.beers.map((beer, index) => {
-                    return(
-                        <div key={index}>
-                          <Link to={`/beers/${beer.id}`}><img src={beer.image_url} alt={beer.name} /></Link>
-                        </div>
-          
-                    )
-                })}
-            </div>
-            
-        )
-    }
+          );
+        })}
+      </div>
+    );
+  }
 }
-
 export default ListBeers;
